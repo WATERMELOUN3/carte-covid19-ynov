@@ -114,7 +114,7 @@ import pandas as pd
 #    for row in df:
 #        departement(str(df["dep"]))
 
-def lastDataDep():
+def lastData():
     date = datetime.today() - timedelta(days=1)
     dateSTR = date.strftime('%d-%m-%Y')
     
@@ -149,7 +149,7 @@ def lastDataDep():
 
 
 # Format Date "dd-mm-yyyy"
-def dataAtDateDep(date):
+def dataAtDate(date):
     if(datetime.strptime(date, '%d-%m-%Y')>(datetime.today() - timedelta(days=1))):
         return None
     url = "https://coronavirusapifr.herokuapp.com/data/departements-by-date/" + str(date)
@@ -182,7 +182,7 @@ def dataAtDateDep(date):
     #
     print(dfFinal)
 
-dataAtDateDep("05-01-2022")
+#dataAtDate("05-01-2022")
 
 
 
