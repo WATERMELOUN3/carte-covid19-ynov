@@ -7,20 +7,23 @@ app = Flask(__name__, static_url_path='', static_folder="public")
 def index():
     return send_file("public/index.html")
 
-@app.route('/<path:path>')
+@app.route('/<string:path>')
 def serve(path):
-    print(path)
     return send_from_directory('public', path)
+
+@app.route('/files/<string:path>')
+def serveData(path):
+    return send_from_directory('public/files', path)
 
 @app.route("/api")
 def hello_world():
     return "<p>Hello, World!</p>"
 
-@app.route("/lastDataDep")
+@app.route("/api/lastDataDep")
 def getDataDepToday():
     return lastDataDep()
 
 #date format "dd-mm-yyyy"
-@app.route("/dataDepDate/<string:date>")
+@app.route("/api/dataDepDate/<string:date>")
 def getDataDepAtDate(date):
     return dataDepAtDate(date)
