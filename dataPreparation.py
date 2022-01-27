@@ -146,6 +146,7 @@ def lastData():
     #print(dfFinal.columns)
     #
     print(dfFinal)
+    return dfFinal
 
 
 # Format Date "dd-mm-yyyy"
@@ -181,7 +182,7 @@ def dataAtDate(date):
     #print(dfFinal.columns)
     #
     print(dfFinal)
-
+    return dfFinal
 #dataAtDate("05-01-2022")
 
 
