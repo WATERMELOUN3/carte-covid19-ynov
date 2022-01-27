@@ -179,7 +179,7 @@ function drawMap() {
     const path = d3.geoPath();
     const projection = d3.geoConicConformal()
         .center([2.454071, 46.279229])
-        .scale(2600)
+        .scale(3000)
         .translate([width / 2, height / 2]);
 
     path.projection(projection);

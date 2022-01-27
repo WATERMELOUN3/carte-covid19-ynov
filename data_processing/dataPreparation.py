@@ -90,9 +90,7 @@ def dataDepAtDate(date):
 #        print("Fichier déjà existant !")
         
     return str(dfFinal.to_json(orient="records"))
-#dataAtDate("05-01-2022")
-print(lastDataDep())
-print(dataDepAtDate("03-01-2022"))
+    
 
 
 
