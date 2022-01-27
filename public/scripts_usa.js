@@ -172,33 +172,40 @@ function legend({ color, ...options }) {
     return Legend(color, options);
 }
 
+const data = await d3.csv("files/unemployment201907.csv");
 const color = d3.scaleQuantize([1, 7], d3.schemeBlues[6]);
+const path = d3.geoPath();
+const format = d => `${d}%`;
+const us = await d3.json("files/states-albers-10m.json");
+
+console.log(data);
 
 function drawMap() {
-    const width = 550, height = 550;
-    const path = d3.geoPath();
-    const projection = d3.geoConicConformal()
-        .center([2.454071, 46.279229])
-        .scale(2600)
-        .translate([width / 2, height / 2]);
+    const svg = d3.select("body").append("svg")
+        .attr("viewBox", [0, 0, 975, 610]);
 
-    path.projection(projection);
+    svg.append("g")
+        .attr("transform", "translate(610,20)")
+        .append(() => legend({ color, title: "test 3", width: 260 }));
 
-    const svg = d3.select('#map').append("svg")
-        .attr("id", "svg")
-        .attr("width", width)
-        .attr("height", height);
+    svg.append("g")
+        .selectAll("path")
+        .data(topojson.feature(us, us.objects.states).features)
+        .join("path")
+        .attr("fill", d => color(data.find((o) => o.name === d.properties.name).rate))
+        .attr("d", path)
+        .append("title")
+        .text(d => `${d.properties.name}
+${format(data.find((o) => o.name === d.properties.name).rate)}`);
 
-    const deps = svg.append("g");
+    svg.append("path")
+        .datum(topojson.mesh(us, us.objects.states, (a, b) => a !== b))
+        .attr("fill", "none")
+        .attr("stroke", "white")
+        .attr("stroke-linejoin", "round")
+        .attr("d", path);
 
-    d3.json('files/departements_france.json').then(function (geojson) {
-        console.log(geojson);
-        deps.selectAll("path")
-            .data(geojson.features)
-            .enter()
-            .append("path")
-            .attr("d", path);
-    });
+    return svg.node;
 }
 
 drawMap();

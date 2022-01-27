@@ -1,4 +1,4 @@
 #! /bin/bash
 
 export FLASK_APP="server"
-flask run
+flask run -p 5001
