@@ -7,11 +7,29 @@
 
     <title>COVID19 CARTE</title>
     <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
 
   <body>
-    <div id="map"></div>
-    <!-- <script src="https://d3js.org/d3.v7.min.js"></script> -->
+    <div class="flex flex-col h-screen">
+      <div id="map" class="mx-auto border-b-2 border-slate-300 mb-6"></div>
+      <div class="flex justify-center">
+        <input type="date" id="date" name="trip-start" />
+        <button
+          id="update"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Update
+        </button>
+      </div>
+      <div class="flex justify-center">
+        <select name="zones" id="zone-select" class="mt-4 w-60 justify-center">
+          <option value="dep">Département</option>
+          <option value="reg">Région</option>
+        </select>
+      </div>
+    </div>
+
     <script src="https://unpkg.com/topojson@3"></script>
     <script src="https://unpkg.com/topojson-client@3"></script>
     <script type="module" src="scripts.js"></script>

@@ -175,11 +175,11 @@ function legend({ color, ...options }) {
 const color = d3.scaleQuantize([1, 7], d3.schemeBlues[6]);
 
 function drawMap() {
-    const width = 550, height = 550;
+    const width = 700, height = 700;
     const path = d3.geoPath();
     const projection = d3.geoConicConformal()
         .center([2.454071, 46.279229])
-        .scale(2600)
+        .scale(3000)
         .translate([width / 2, height / 2]);
 
     path.projection(projection);
@@ -201,4 +201,17 @@ function drawMap() {
     });
 }
 
+function update() {
+    fetch("api/dataDepDate/3-1-2022").then((res) => {
+        res.json().then((json) => {
+            // WE GOT THE JSON
+        }).catch((err) => [
+
+        ]);
+    }).catch((err) => {
+
+    });
+}
+
 drawMap();
+document.getElementById("update").addEventListener("click", update, false);
