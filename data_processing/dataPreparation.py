@@ -90,10 +90,113 @@ def dataDepAtDate(date):
 #        print("Fichier déjà existant !")
         
     return str(dfFinal.to_json(orient="records"))
-#dataAtDate("05-01-2022")
-print(lastDataDep())
-print(dataDepAtDate("03-01-2022"))
 
+def lastDataReg():
+    date = datetime.today() - timedelta(days=1)
+    dateSTR = date.strftime('%d-%m-%Y')
+    
+    url = "https://coronavirusapifr.herokuapp.com/data/departements-by-date/" + str(dateSTR)
+    print(url)
+    resp = requests.get(url)
+    respIsOK = False
+    i = 1
+    while(respIsOK == False):
+        try:
+            resp.json()
+            respIsOK = True
+        except ValueError:
+            i = i + 1
+            date = datetime.today() - timedelta(days=i)
+            dateSTR = date.strftime('%d-%m-%Y')
+            url = "https://coronavirusapifr.herokuapp.com/data/departements-by-date/" + str(dateSTR)
+            print(url)
+            resp = requests.get(url)
+            
+    txt = resp.json()
+#    print(txt)
+    df = pd.DataFrame(txt)
+    
+    listReg = [84, 27, 53, 24, 94, 44, 32, 11, 28, 75, 76, 52, 93]
+    listDfReg = []
+    for reg in listReg:
+        
+        dfReg = df[df['reg'] == reg]
+        sumPos = 0
+        sumPos7 = 0
+        for i in range(len(dfReg)) :
+            if(dfReg["pos"].iloc[i] == None):
+                sumPos = sumPos + 0
+                sumPos7 = sumPos7 + 0
+            else :
+                sumPos = sumPos + dfReg["pos"].iloc[i]
+                sumPos7 = sumPos7 + dfReg["pos_7j"].iloc[i]
+        if(sumPos == 0):
+            sumPos = None
+        if(sumPos7 == 0):
+            sumPos7 = None
+        #print(sumPos)
+        listDfReg.append([reg, dateSTR, sumPos, sumPos7])
+    dfRegFinal = pd.DataFrame(data=listDfReg, columns=['reg', 'date','pos', 'pos_7j'])
+
+
+    return str(dfRegFinal.to_json(orient="records"))
+
+def dataRegAtDate(date):
+    dateSTR = date
+    if(datetime.strptime(date, '%d-%m-%Y')>(datetime.today() - timedelta(days=1))):
+        return None
+    url = "https://coronavirusapifr.herokuapp.com/data/departements-by-date/" + str(date)
+    print(url)
+    
+    resp = requests.get(url)
+    respIsOK = False
+    i = 1
+    while(respIsOK == False):
+        try:
+            resp.json()
+            respIsOK = True
+        except ValueError:
+            i = i + 1
+            date = datetime.strptime(date, '%d-%m-%Y') - timedelta(days=1)
+            dateSTR = date.strftime('%d-%m-%Y')
+            url = "https://coronavirusapifr.herokuapp.com/data/departements-by-date/" + str(dateSTR)
+            print(url)
+            resp = requests.get(url)
+            
+    txt = resp.json()
+            
+    df = pd.DataFrame(txt)
+    
+    listReg = [84, 27, 53, 24, 94, 44, 32, 11, 28, 75, 76, 52, 93]
+    listDfReg = []
+    for reg in listReg:
+        
+        dfReg = df[df['reg'] == reg]
+        sumPos = 0
+        sumPos7 = 0
+        for i in range(len(dfReg)) :
+            if(dfReg["pos"].iloc[i] == None):
+                sumPos = sumPos + 0
+                sumPos7 = sumPos7 + 0
+            else :
+                sumPos = sumPos + dfReg["pos"].iloc[i]
+                sumPos7 = sumPos7 + dfReg["pos_7j"].iloc[i]
+        if(sumPos == 0):
+            sumPos = None
+        if(sumPos7 == 0):
+            sumPos7 = None
+        #print(sumPos)
+        listDfReg.append([reg, dateSTR, sumPos, sumPos7])
+    dfRegFinal = pd.DataFrame(data=listDfReg, columns=['reg', 'date','pos', 'pos_7j'])
+
+
+    return str(dfRegFinal.to_json(orient="records"))
+#    return None
+#dataAtDate("05-01-2022")
+#print(lastDataDep())
+#print(dataDepAtDate("03-01-2022"))
+print(lastDataReg())
+print(dataRegAtDate("03-01-2022"))
 
 
 
