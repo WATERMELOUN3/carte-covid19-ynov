@@ -2,6 +2,7 @@ import requests
 from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
+import os
 # NOK import JSONDecodeError
 
 #def departement(dep):
@@ -136,7 +137,7 @@ def lastData():
             resp = requests.get(url)
             
     txt = resp.json()
-            
+    print(txt)
     df = pd.DataFrame(txt)
     print(df)
     
@@ -146,11 +147,18 @@ def lastData():
     #print(dfFinal.columns)
     #
     print(dfFinal)
+    
+    if(os.path.isfile('./final_data/' + dateSTR + '.json') == False):
+        dfFinal.to_json('./final_data/' + dateSTR + '.json', orient="records")
+    else :
+        print("Fichier déjà existant !")
+
     return dfFinal
 
 
 # Format Date "dd-mm-yyyy"
 def dataAtDate(date):
+    dateSTR = date
     if(datetime.strptime(date, '%d-%m-%Y')>(datetime.today() - timedelta(days=1))):
         return None
     url = "https://coronavirusapifr.herokuapp.com/data/departements-by-date/" + str(date)
@@ -182,9 +190,16 @@ def dataAtDate(date):
     #print(dfFinal.columns)
     #
     print(dfFinal)
+    
+    if(os.path.isfile('./final_data/' + dateSTR + '.json') == False):
+        dfFinal.to_json('./final_data/' + dateSTR + '.json', orient="records")
+    else :
+        print("Fichier déjà existant !")
+        
     return dfFinal
 #dataAtDate("05-01-2022")
-
+lastData()
+dataAtDate("05-01-2022")
 
 
 
