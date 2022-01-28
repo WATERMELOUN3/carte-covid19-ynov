@@ -265,10 +265,11 @@ function update() {
 }
 
 function today() {
-    if (!document.getElementById('date').value) document.getElementById('date').value = new Date().toDateInputValue();
+    document.getElementById('date').value = new Date().toDateInputValue();
     update();
 }
 
 document.getElementById("update").addEventListener("click", update, false);
 document.getElementById("today").addEventListener("click", today, false);
-today();
+if (!document.getElementById('date').value) today();
+else update();
