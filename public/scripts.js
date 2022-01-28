@@ -48,6 +48,7 @@ function Legend(color, {
     }
 
     const svg = d3.create("svg")
+        .attr("id", "legend-svg")
         .attr("width", width)
         .attr("height", height)
         .attr("viewBox", [0, 0, width, height])
@@ -172,9 +173,44 @@ function legend({ color, ...options }) {
     return Legend(color, options);
 }
 
-const color = d3.scaleQuantize([1, 7], d3.schemeBlues[6]);
+Date.prototype.toDateInputValue = (function () {
+    var local = new Date(this);
+    local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+    return local.toJSON().slice(0, 10);
+});
 
-function drawMap() {
+const departementsJson = await d3.json("files/departements_france.json");
+const regionsJson = await d3.json("files/regions_france.json");
+
+console.log(regionsJson);
+
+function minAndMaxPos(data) {
+    let min = Number.MAX_SAFE_INTEGER;
+    let max = 0;
+    data.forEach(e => {
+        const val = e.pos;
+        if (val < min) min = val;
+        if (val > max) max = val;
+    });
+    return [min, max];
+}
+
+function clear() {
+    d3.select('#map').select("#map-svg").remove();
+}
+
+function findDepOrReg(data, d) {
+    if (d.properties.CODE_DEPT === undefined) {
+        return data.find((o) => o.reg === parseInt(d.properties.code));
+    } else {
+        return data.find((o) => o.dep === parseInt(d.properties.CODE_DEPT))
+    }
+}
+
+function drawMap(data, geojson) {
+    clear();
+    const minmax = minAndMaxPos(data);
+    const color = d3.scaleLinear().domain(minmax).range(['white', 'red']);
     const width = 700, height = 700;
     const path = d3.geoPath();
     const projection = d3.geoConicConformal()
@@ -185,26 +221,41 @@ function drawMap() {
     path.projection(projection);
 
     const svg = d3.select('#map').append("svg")
-        .attr("id", "svg")
+        .attr("id", "map-svg")
         .attr("width", width)
         .attr("height", height);
 
-    const deps = svg.append("g");
+    //svg.append(() => legend({ color, title: "Taux Covid", width: 260 }));
 
-    d3.json('files/departements_france.json').then(function (geojson) {
-        console.log(geojson);
-        deps.selectAll("path")
-            .data(geojson.features)
-            .enter()
-            .append("path")
-            .attr("d", path);
-    });
+    svg.append("g").selectAll("path")
+        .data(geojson.features)
+        .enter()
+        .append("path")
+        .attr("fill", d => color(findDepOrReg(data, d).pos))
+        .attr("d", path)
+        .append("title")
+        .text(d => `${d.properties.NOM_DEPT}\n${findDepOrReg(data, d).pos} cas en 24h\n${findDepOrReg(data, d).pos_7j} cas totaux sur 7j`)
+}
+
+function formattedDate(d = new Date) {
+    let month = String(d.getMonth() + 1);
+    let day = String(d.getDate() - 1);
+    const year = String(d.getFullYear());
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return `${day}-${month}-${year}`;
 }
 
 function update() {
-    fetch("api/dataDepDate/3-1-2022").then((res) => {
+    const zone = document.getElementById("zone-select").value;
+    const date = formattedDate(new Date(document.getElementById("date").value));
+    const route = zone === "dep" ? "dataDepDate" : "dataRegDate";
+    fetch(`api/${route}/${date}`).then((res) => {
         res.json().then((json) => {
-            // WE GOT THE JSON
+            console.log(json);
+            drawMap(json, zone === "dep" ? departementsJson : regionsJson);
         }).catch((err) => [
 
         ]);
@@ -213,5 +264,11 @@ function update() {
     });
 }
 
-drawMap();
+function today() {
+    document.getElementById('date').value = new Date().toDateInputValue();
+    update();
+}
+
 document.getElementById("update").addEventListener("click", update, false);
+document.getElementById("today").addEventListener("click", today, false);
+today();

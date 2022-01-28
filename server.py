@@ -1,5 +1,5 @@
 from flask import Flask, send_file, send_from_directory
-from data_processing.dataPreparation import lastDataDep, dataDepAtDate
+from data_processing.dataPreparation import lastDataDep, dataDepAtDate, lastDataReg, dataRegAtDate
 
 app = Flask(__name__, static_url_path='', static_folder="public")
 
@@ -27,3 +27,12 @@ def getDataDepToday():
 @app.route("/api/dataDepDate/<string:date>")
 def getDataDepAtDate(date):
     return dataDepAtDate(date)
+
+@app.route("/api/lastDataReg")
+def getDataRegToday():
+    return lastDataReg()
+
+#date format "dd-mm-yyyy"
+@app.route("/api/dataRegDate/<string:date>")
+def getDataRegAtDate(date):
+    return dataRegAtDate(date)

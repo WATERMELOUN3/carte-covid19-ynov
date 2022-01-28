@@ -191,12 +191,6 @@ def dataRegAtDate(date):
 
 
     return str(dfRegFinal.to_json(orient="records"))
-#    return None
-#dataAtDate("05-01-2022")
-#print(lastDataDep())
-#print(dataDepAtDate("03-01-2022"))
-print(lastDataReg())
-print(dataRegAtDate("03-01-2022"))
 
 
 
