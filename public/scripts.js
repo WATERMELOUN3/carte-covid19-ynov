@@ -265,7 +265,7 @@ function update() {
 }
 
 function today() {
-    document.getElementById('date').value = new Date().toDateInputValue();
+    if (!document.getElementById('date').value) document.getElementById('date').value = new Date().toDateInputValue();
     update();
 }
 
